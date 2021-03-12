@@ -1,0 +1,58 @@
+{
+	"folders": [
+		{
+			"name": "TFT24_1",
+			"path": "..\\..\\TFT24_1"
+		},
+		{
+			"name": "Button1",
+			"path": "..\\..\\Button1"
+		},
+		{
+			"name": "Temperature1",
+			"path": "..\\..\\Temperature1"
+		},
+		{
+			"name": "VolumeController1",
+			"path": "..\\..\\VolumeController1"
+		},
+		{
+			"name": "DrawGraph1",
+			"path": "..\\..\\DrawGraph1"
+		},
+		{
+			"name": "ReadTFT",
+			"path": "..\\..\\ReadTFT"
+		},
+		{
+			"name": "Diagnostic",
+			"path": ".."
+		},
+		{
+			"name": "RotaryDebug",
+			"path": "..\\..\\RotaryDebug"
+		},
+		{
+			"name": "TimerTutorial",
+			"path": "..\\..\\TimerTutorial"
+		},
+		{
+			"name": "Classes",
+			"path": "..\\..\\Classes"
+		}
+	],
+	"settings": {
+		"scm.alwaysShowRepositories": true,
+		"files.associations": {
+			"eeprom.h": "c",
+			"i2c_master.h": "c",
+			"liquidcrystal_i2c.h": "c",
+			"arduino.h": "c",
+			"io.h": "c",
+			"print.h": "c",
+			"inttypes.h": "c",
+			"wire.h": "c",
+			"pins_arduino.h": "c"
+		}
+	}
+}
