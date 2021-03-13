@@ -4,6 +4,7 @@
 #include <RC5.h>
 #include <rotary.h>
 #include <mas6116.h>
+#include "custom.h"
 
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
@@ -47,11 +48,6 @@ unsigned char oldbtnstate = 0;
 unsigned char rotarystate; // current rotary encoder status
 unsigned char result = 0;  //current rotary status
 
-// define encoder pins
-const char encoderPinA = 6;
-const char encoderPinB = 5;
-const char encoderbtn = 7;
-
 int analogPin = A1;
 
 const char *inputName[] = {
@@ -60,50 +56,31 @@ const char *inputName[] = {
 	"CD    ",
 	"Tuner "}; // Elektor i/p board
 
-#define B 255
-#define A 32
-
-// 4x4 charset
-unsigned char cc0[] = { // Custom Character 0
-	0b00000, 0b00000, 0b00000, 0b00111, 0b01111, 0b11111, 0b11111, 0b11111};
-
-unsigned char cc1[] = { // Custom Character 1*/
-	0b11100, 0b11110, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111};
-
-unsigned char cc2[] = { // Custom Character 2*/
-	0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b00000, 0b00000, 0b00000};
-
-unsigned char cc3[] = { // Custom Character 3*/
-	0b00000, 0b00000, 0b00000, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111};
-
-unsigned char cc4[] = { // Custom Character 4*/
-	0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b01111, 0b00111};
-
-unsigned char cc5[] = { // Custom Character 5*/
-	0b00111, 0b01111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111};
-
-unsigned char cc6[] = { // Custom Character 6*/
-	0b00000, 0b00000, 0b00000, 0b11100, 0b11110, 0b11111, 0b11111, 0b11111};
-
-unsigned char cc7[] = { // Custom Character 7*/
-	0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11110, 0b11100};
-
-//			   			0            1            2            3            4            5            6            7            8            9
-unsigned char bn1[] = {5, 2, 2, 1, 0, 5, B, A, 5, 2, 2, 1, 2, 2, 2, 1, 5, A, A, B, B, 2, 2, 2, 5, 2, 2, 2, 2, 2, 2, B, 5, 2, 2, 1, 5, 2, 2, 1};
-unsigned char bn2[] = {B, A, A, B, A, A, B, A, A, A, A, B, A, 3, 3, B, B, 3, 3, B, B, 3, 3, 6, B, 3, 3, 6, A, A, 0, 7, B, 3, 3, B, 4, 3, 3, B};
-unsigned char bn3[] = {B, A, A, B, A, A, B, A, 5, 2, 2, 2, A, A, A, B, A, A, A, B, A, A, A, B, B, A, A, B, A, A, B, A, B, A, A, B, A, A, A, B};
-unsigned char bn4[] = {4, 3, 3, 7, 3, 3, B, 3, B, 3, 3, 3, 4, 3, 3, 7, A, A, A, B, 4, 3, 3, 7, 4, 3, 3, 7, A, A, B, A, 4, 3, 3, 7, 4, 3, 3, 7};
-
 char buffer1[20] = "";
 char bal_L[11] = {21, 20, 19, 18, 16, 15, 13, 11, 8, 5, 0};
 char bal_R[11] = {0, 5, 8, 11, 13, 15, 16, 18, 19, 20, 21};
 
+// LCD construct
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display
+
+// define encoder pins
+const char encoderPinA = 6;
+const char encoderPinB = 5;
+const char encoderbtn = 7;
+// Rotary construct
 Rotary rotary = Rotary(encoderPinA, encoderPinB, encoderbtn);
 
+// define IR input
 unsigned int IR_PIN = 8;
 unsigned long t0;
+//RC5 construct
 RC5 rc5(IR_PIN);
+
+// define preAmp control pins
+const int mutebPin = A3;
+const int csbPin = 10;
+// preAmp construct
+mas6116 preamp(mutebPin,csbPin);
 
 // Function prototypes
 void RC5Update(void);
@@ -349,8 +326,8 @@ void volumeUpdate()
 void setVolume()
 {
 	balanceUpdate();
-	mas6116Write(mas6116RegLeft, leftVol);
-	mas6116Write(mas6116RegRight, rightVol);
+	preamp.mas6116Write(mas6116RegLeft, leftVol);
+	preamp.mas6116Write(mas6116RegRight, rightVol);
 }
 
 void balanceUpdate(void)
@@ -585,7 +562,6 @@ void setup()
 		pinMode(pinOut, OUTPUT);
 		digitalWrite(pinOut, LOW);
 	}
-	mas6116Init();
 	lcd.init();		 // initialize the lcd
 	lcd.backlight(); // turn on LCD backlight
 	backlight = 1;

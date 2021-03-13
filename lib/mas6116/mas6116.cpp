@@ -2,15 +2,16 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-void mas6116Init() {
-	SPI.begin();
+mas6116::mas6116(int mutebPin, int csbPin)
+{
+    SPI.begin();
 	pinMode(mutebPin, OUTPUT);
 	digitalWrite(mutebPin, HIGH);
 	pinMode(csbPin, OUTPUT);
   	digitalWrite(csbPin, HIGH);
 }
 
-void mas6116Write(unsigned char mas6116Reg, unsigned char value) {
+void mas6116::mas6116Write(unsigned char mas6116Reg, unsigned char value) {
 	// mas6116 datasheet recommends setting "don't care" bits to HIGH
 	unsigned char address = (mas6116Reg & mas6116RegMask) | ~(mas6116RegMask | mas6116ReadBit);
 	// take the CS pin low to select the vol chip
@@ -22,7 +23,7 @@ void mas6116Write(unsigned char mas6116Reg, unsigned char value) {
 	digitalWrite(csbPin, HIGH);	//PA1;
 }
 
-unsigned char mas6116Read(unsigned char mas6116Reg) {
+unsigned char mas6116::mas6116Read(unsigned char mas6116Reg) {
 	// mas6116 datasheet recommends setting "don't care" bits to HIGH
 	unsigned char address = (mas6116Reg & mas6116RegMask) | ~mas6116RegMask | mas6116ReadBit;
 	unsigned char result = 0;
