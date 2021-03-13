@@ -25,10 +25,10 @@
 #define printByte(args) write(args);
 
 /******* TIMING *******/
-unsigned long mil_onButton;	 // Stores last time for switch press
-unsigned long mil_onAction;	 // Stores last time of user input
-unsigned long mil_onFadeIn;	 // LCD fade timing
-unsigned long mil_onFadeOut; // LCD fade timing
+unsigned long milOnButton;	 // Stores last time for switch press
+unsigned long milOnAction;	 // Stores last time of user input
+unsigned long milOnFadeIn;	 // LCD fade timing
+unsigned long milOnFadeOut; // LCD fade timing
 
 /********* Global Variables *******************/
 unsigned char volume;	 // current volume, between 0 and VOL_STEPS
@@ -57,8 +57,8 @@ const char *inputName[] = {
 	"Tuner "}; // Elektor i/p board
 
 char buffer1[20] = "";
-char bal_L[11] = {21, 20, 19, 18, 16, 15, 13, 11, 8, 5, 0};
-char bal_R[11] = {0, 5, 8, 11, 13, 15, 16, 18, 19, 20, 21};
+char balLeft[11] = {21, 20, 19, 18, 16, 15, 13, 11, 8, 5, 0};
+char balRight[11] = {0, 5, 8, 11, 13, 15, 16, 18, 19, 20, 21};
 
 // LCD construct
 LiquidCrystal_I2C lcd(0x27, 20, 4); // set the LCD address to 0x27 for a 20 chars and 4 line display
@@ -80,7 +80,7 @@ RC5 rc5(IR_PIN);
 const int mutebPin = A3;
 const int csbPin = 10;
 // preAmp construct
-mas6116 preamp(mutebPin,csbPin);
+mas6116 preamp(mutebPin, csbPin);
 
 // Function prototypes
 void RC5Update(void);
@@ -89,12 +89,14 @@ void volumeUpdate();
 void buttonPressed();
 void setVolume();
 void sourceUpdate();
+void mute();
+void unMute();
 void toggleMute();
 void balanceUpdate();
 void defineCustomChars();
-void lcd_printThreeNumber(unsigned char column, unsigned char number);
+void lcdPrintThreeNumber(unsigned char column, unsigned char number);
 void saveIOValues();
-void lcd_print_Bal();
+void lcdPrintBal();
 void powerdown(void);
 
 void powerdown(void)
@@ -130,7 +132,7 @@ void saveIOValues()
 	}
 }
 
-void lcd_print_Bal()
+void lcdPrintBal()
 {
 	sprintf(buffer1, "      ");
 	lcd.setCursor(0, 3);
@@ -152,7 +154,7 @@ void defineCustomChars()
 	lcd.createChar(7, cc7);
 }
 
-void lcd_printThreeNumber(unsigned char column, unsigned char number)
+void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 {
 	unsigned char highnumber;
 	unsigned char midnumber;
@@ -300,11 +302,10 @@ void volumeUpdate()
 		{
 			if (isMuted)
 			{
-				toggleMute();
+				unMute();
 			}
 			volume = volume + 1;
 			setVolume();
-			lcd_printThreeNumber(6, volume);
 		}
 		break;
 	case DIR_CCW:
@@ -312,11 +313,10 @@ void volumeUpdate()
 		{
 			if (isMuted)
 			{
-				toggleMute();
+				unMute();
 			}
 			volume = volume - 1;
 			setVolume();
-			lcd_printThreeNumber(6, volume);
 		}
 	default:
 		break;
@@ -328,12 +328,14 @@ void setVolume()
 	balanceUpdate();
 	preamp.mas6116Write(mas6116RegLeft, leftVol);
 	preamp.mas6116Write(mas6116RegRight, rightVol);
+	//display volume setting
+	lcdPrintThreeNumber(6, volume);
 }
 
 void balanceUpdate(void)
 {
-	leftVol = volume + bal_L[balance];
-	rightVol = volume + bal_R[balance];
+	leftVol = volume + balLeft[balance];
+	rightVol = volume + balRight[balance];
 }
 
 // button pressed routine
@@ -345,7 +347,7 @@ void buttonPressed()
 		{
 		case STATE_RUN:
 			state = STATE_IO;
-			mil_onButton = millis();
+			milOnButton = millis();
 			break;
 		default:
 			break;
@@ -361,7 +363,7 @@ void sourceUpdate()
 	{
 	case DIR_CW:
 		oldsource = source;
-		mil_onButton = millis();
+		milOnButton = millis();
 		if (oldsource < 4)
 		{
 			source++;
@@ -374,7 +376,7 @@ void sourceUpdate()
 		break;
 	case DIR_CCW:
 		oldsource = source;
-		mil_onButton = millis();
+		milOnButton = millis();
 		if (source > 1)
 		{
 			source--;
@@ -451,11 +453,10 @@ void RC5Update()
 				{
 					if (isMuted)
 					{
-						toggleMute();
+						unMute();
 					}
 					volume = volume + 1;
 					setVolume();
-					lcd_printThreeNumber(6, volume);
 				}
 				break;
 			case 17:
@@ -464,11 +465,10 @@ void RC5Update()
 				{
 					if (isMuted)
 					{
-						toggleMute();
+						unMute();
 					}
 					volume = volume - 1;
 					setVolume();
-					lcd_printThreeNumber(6, volume);
 				}
 				break;
 			case 32:
@@ -478,7 +478,7 @@ void RC5Update()
 					if (balance < 10) // not yet fully right
 					{
 						balance = balance + 1;
-						lcd_print_Bal();
+						lcdPrintBal();
 						setVolume();
 					}
 				}
@@ -490,7 +490,7 @@ void RC5Update()
 					if (balance != 0) //not yet fully left
 					{
 						balance = balance - 1;
-						lcd_print_Bal();
+						lcdPrintBal();
 						setVolume();
 					}
 				}
@@ -505,17 +505,14 @@ void RC5Update()
 						backlight = STANDBY;
 						//lcd.noDisplay();
 						lcd.noBacklight(); //Turn off backlight
-						if (!isMuted)
-						{
-							toggleMute(); //mute output
-						}
+						mute(); //mute output
 					}
 					else
 					{
 						backlight = ACTIVE;
 						//lcd.display();
 						lcd.backlight(); //Turn on backlight
-						toggleMute();	 //unmute output
+						unMute();		 //unmute output
 					}
 				}
 				break;
@@ -537,22 +534,27 @@ void RC5Update()
 	}
 }
 
+void mute()
+{
+	isMuted = 0;
+	digitalWrite(mutebPin, HIGH);
+	lcd.setCursor(0, 1);
+	lcd.print("      ");
+}
+
+void unMute()
+{
+	isMuted = 1;
+	digitalWrite(mutebPin, LOW);
+	lcd.setCursor(0, 1);
+	lcd.print("Muted ");
+}
 void toggleMute()
 {
 	if (isMuted)
-	{
-		isMuted = 0;
-		digitalWrite(mutebPin, HIGH);
-		lcd.setCursor(0, 1);
-		lcd.print("      ");
-	}
+		unMute();
 	else
-	{
-		isMuted = 1;
-		digitalWrite(mutebPin, LOW);
-		lcd.setCursor(0, 1);
-		lcd.print("Muted ");
-	}
+		mute();
 }
 
 void setup()
@@ -584,15 +586,13 @@ void setup()
 	balance = EEPROM.read(EEPROM_BALANCE);
 	//set startup volume
 	setVolume();
-	digitalWrite(source, HIGH);
-	lcd.print(inputName[source - 1]);
+	//set source
+	setIO();
 	//display balance setting
-	lcd_print_Bal();
+	lcdPrintBal();
 	//unmute
-	isMuted = 0;
-	digitalWrite(mutebPin, HIGH);
-	//display volume setting
-	lcd_printThreeNumber(6, volume);
+	unMute();
+	
 }
 
 void loop()
@@ -600,7 +600,7 @@ void loop()
 	powerdown(); // shutdown check of supply voltage
 	RC5Update();
 	RotaryUpdate();
-	if ((millis() - mil_onButton) > TIME_EXITSELECT * 1000)
+	if ((millis() - milOnButton) > TIME_EXITSELECT * 1000)
 	{
 		state = STATE_RUN;
 	}
