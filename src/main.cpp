@@ -25,9 +25,9 @@
 #define printByte(args) write(args);
 
 /******* TIMING *******/
-unsigned long milOnButton;	 // Stores last time for switch press
-unsigned long milOnAction;	 // Stores last time of user input
-unsigned long milOnFadeIn;	 // LCD fade timing
+unsigned long milOnButton;	// Stores last time for switch press
+unsigned long milOnAction;	// Stores last time of user input
+unsigned long milOnFadeIn;	// LCD fade timing
 unsigned long milOnFadeOut; // LCD fade timing
 
 /********* Global Variables *******************/
@@ -98,6 +98,17 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number);
 void saveIOValues();
 void lcdPrintBal();
 void powerdown(void);
+void lcdPrintSpaces();
+
+ISR(ANALOG_COMP_vect)
+{
+	saveIOValues();
+	backlight = STANDBY;
+	lcd.noDisplay();
+	lcd.noBacklight(); //Turn off backlight
+	mute();			   //mute output
+	state = STATE_OFF;
+}
 
 void powerdown(void)
 {
@@ -154,6 +165,14 @@ void defineCustomChars()
 	lcd.createChar(7, cc7);
 }
 
+void lcdPrintSpaces()
+{
+	lcd.printByte(A); // Blank
+	lcd.printByte(A); // Blank
+	lcd.printByte(A); // Blank
+	lcd.printByte(A); // Blank
+}
+
 void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 {
 	unsigned char highnumber;
@@ -165,10 +184,7 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 	lcd.setCursor(column, 0);
 	if (highnumber == 0)
 	{
-		lcd.printByte(A); // Blank
-		lcd.printByte(A); // Blank
-		lcd.printByte(A); // Blank
-		lcd.printByte(A); // Blank
+		lcdPrintSpaces();
 	}
 	else
 	{
@@ -190,10 +206,7 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 	lcd.setCursor(column, 1);
 	if (highnumber == 0)
 	{
-		lcd.printByte(A); // Blank
-		lcd.printByte(A); // Blank
-		lcd.printByte(A); // Blank
-		lcd.printByte(A); // Blank
+		lcdPrintSpaces();
 	}
 	else
 	{
@@ -215,10 +228,7 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 	lcd.setCursor(column, 2);
 	if (highnumber == 0)
 	{
-		lcd.printByte(A);
-		lcd.printByte(A);
-		lcd.printByte(A);
-		lcd.printByte(A);
+		lcdPrintSpaces();
 	}
 	else
 	{
@@ -240,10 +250,7 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 	lcd.setCursor(column, 3);
 	if (highnumber == 0)
 	{
-		lcd.printByte(A);
-		lcd.printByte(A);
-		lcd.printByte(A);
-		lcd.printByte(A);
+		lcdPrintSpaces();
 	}
 	else
 	{
@@ -505,7 +512,7 @@ void RC5Update()
 						backlight = STANDBY;
 						//lcd.noDisplay();
 						lcd.noBacklight(); //Turn off backlight
-						mute(); //mute output
+						mute();			   //mute output
 					}
 					else
 					{
@@ -549,6 +556,7 @@ void unMute()
 	lcd.setCursor(0, 1);
 	lcd.print("Muted ");
 }
+
 void toggleMute()
 {
 	if (isMuted)
@@ -584,6 +592,14 @@ void setup()
 	volume = EEPROM.read(EEPROM_VOLUME);
 	source = EEPROM.read(EEPROM_SOURCE);
 	balance = EEPROM.read(EEPROM_BALANCE);
+
+	// Setup Analog Compare Interrupt
+	ADCSRB = 0x40;	//Analog Comparator Multiplexer Enable
+	ADCSRA = 0x00;	//ADC Disabled
+	ADMUX = 0x01;	// Arduino pin A1
+	ACSR |= (1<<ACBG) | (1<<ACIS1) | (1<<ACIS0);	//Analog Comparator Bandgap Select, Interrupt on rising edge
+	ACSR |= (1<<ACIE);	//Analog Comparator Interrupt enable
+
 	//set startup volume
 	setVolume();
 	//set source
@@ -592,12 +608,11 @@ void setup()
 	lcdPrintBal();
 	//unmute
 	unMute();
-	
 }
 
 void loop()
 {
-	powerdown(); // shutdown check of supply voltage
+	//powerdown(); // shutdown check of supply voltage
 	RC5Update();
 	RotaryUpdate();
 	if ((millis() - milOnButton) > TIME_EXITSELECT * 1000)
