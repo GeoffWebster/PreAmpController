@@ -541,7 +541,7 @@ void RC5Update()
 	}
 }
 
-void mute()
+void unMute()
 {
 	isMuted = 0;
 	digitalWrite(mutebPin, HIGH);
@@ -549,7 +549,7 @@ void mute()
 	lcd.print("      ");
 }
 
-void unMute()
+void mute()
 {
 	isMuted = 1;
 	digitalWrite(mutebPin, LOW);
@@ -560,9 +560,13 @@ void unMute()
 void toggleMute()
 {
 	if (isMuted)
+	{
 		unMute();
+	}
 	else
+	{
 		mute();
+	}
 }
 
 void setup()
@@ -607,7 +611,7 @@ void setup()
 	//display balance setting
 	lcdPrintBal();
 	//unmute
-	unMute();
+  	unMute();
 }
 
 void loop()
