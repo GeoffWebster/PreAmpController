@@ -129,18 +129,9 @@ void powerdown(void)
 
 void saveIOValues()
 {
-	if (EEPROM.read(EEPROM_VOLUME) != volume)
-	{
-		EEPROM.write(EEPROM_VOLUME, volume);
-	}
-	if (EEPROM.read(EEPROM_SOURCE) != source)
-	{
-		EEPROM.write(EEPROM_SOURCE, source);
-	}
-	if (EEPROM.read(EEPROM_BALANCE) != balance)
-	{
-		EEPROM.write(EEPROM_BALANCE, balance);
-	}
+	EEPROM.update(EEPROM_VOLUME, volume);
+	EEPROM.update(EEPROM_SOURCE, source);
+	EEPROM.update(EEPROM_BALANCE, balance);
 }
 
 void lcdPrintBal()
