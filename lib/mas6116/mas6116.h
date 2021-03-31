@@ -20,7 +20,8 @@ const int mas6116ReadBit = 0x01 << 2;   // set bit 2 in the address to 1 for rea
 class mas6116
 {
 private:
-    /* data */
+    int _mutebPin;
+    int _csbPin;
 public:
     int mutebPin;
     int csbPin;
