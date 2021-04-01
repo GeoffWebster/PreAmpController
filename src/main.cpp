@@ -535,7 +535,7 @@ void RC5Update()
 void unMute()
 {
 	isMuted = 0;
-	digitalWrite(mutebPin, HIGH);
+	preamp.mas6116Mute(HIGH);
 	lcd.setCursor(0, 1);
 	lcd.print("      ");
 }
@@ -543,7 +543,7 @@ void unMute()
 void mute()
 {
 	isMuted = 1;
-	digitalWrite(mutebPin, LOW);
+	preamp.mas6116Mute(LOW);
 	lcd.setCursor(0, 1);
 	lcd.print("Muted ");
 }
@@ -602,12 +602,12 @@ void setup()
 	//display balance setting
 	lcdPrintBal();
 	//unmute
-  	unMute();
+  	isMuted = 0;
+	preamp.mas6116Mute(HIGH);
 }
 
 void loop()
 {
-	//powerdown(); // shutdown check of supply voltage
 	RC5Update();
 	RotaryUpdate();
 	if ((millis() - milOnButton) > TIME_EXITSELECT * 1000)

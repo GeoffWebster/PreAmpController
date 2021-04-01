@@ -27,6 +27,7 @@ public:
     int csbPin;
     mas6116(int mutebPin, int csbPin);
     void mas6116Write(unsigned char mas6116Reg, unsigned char value);
+    void mas6116Mute(unsigned char);
     unsigned char mas6116Read(unsigned char mas6116Reg);
 };
 
