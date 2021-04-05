@@ -97,7 +97,6 @@ void defineCustomChars();
 void lcdPrintThreeNumber(unsigned char column, unsigned char number);
 void saveIOValues();
 void lcdPrintBal();
-void powerdown(void);
 void lcdPrintSpaces();
 
 ISR(ANALOG_COMP_vect)
@@ -108,23 +107,6 @@ ISR(ANALOG_COMP_vect)
 	lcd.noBacklight(); //Turn off backlight
 	mute();			   //mute output
 	state = STATE_OFF;
-}
-
-void powerdown(void)
-{
-	int val;
-	// Detect power off
-	if (state == STATE_RUN)
-	{
-		val = analogRead(analogPin);
-
-		if (val > 250 && val < 400) // power is failing
-		{
-			//lcd.noBacklight(); //reset backlight
-			saveIOValues();
-			//state = STATE_OFF;
-		}
-	}
 }
 
 void saveIOValues()
