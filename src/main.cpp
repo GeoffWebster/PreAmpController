@@ -483,14 +483,12 @@ void RC5Update()
 					if (backlight)
 					{
 						backlight = STANDBY;
-						//lcd.noDisplay();
 						lcd.noBacklight(); //Turn off backlight
 						mute();			   //mute output
 					}
 					else
 					{
 						backlight = ACTIVE;
-						//lcd.display();
 						lcd.backlight(); //Turn on backlight
 						unMute();		 //unmute output
 					}
@@ -516,6 +514,11 @@ void RC5Update()
 
 void unMute()
 {
+	if (!backlight)
+	{
+		backlight = ACTIVE;
+		lcd.backlight(); //Turn on backlight
+	}
 	isMuted = 0;
 	preamp.mas6116Mute(HIGH);
 	lcd.setCursor(0, 1);
@@ -571,11 +574,11 @@ void setup()
 	balance = EEPROM.read(EEPROM_BALANCE);
 
 	// Setup Analog Compare Interrupt
-	ADCSRB = 0x40;	//Analog Comparator Multiplexer Enable
-	ADCSRA = 0x00;	//ADC Disabled
-	ADMUX = 0x01;	// Arduino pin A1
-	ACSR |= (1<<ACBG) | (1<<ACIS1) | (1<<ACIS0);	//Analog Comparator Bandgap Select, Interrupt on rising edge
-	ACSR |= (1<<ACIE);	//Analog Comparator Interrupt enable
+	ADCSRB = 0x40;									   //Analog Comparator Multiplexer Enable
+	ADCSRA = 0x00;									   //ADC Disabled
+	ADMUX = 0x01;									   // Arduino pin A1
+	ACSR |= (1 << ACBG) | (1 << ACIS1) | (1 << ACIS0); //Analog Comparator Bandgap Select, Interrupt on rising edge
+	ACSR |= (1 << ACIE);							   //Analog Comparator Interrupt enable
 
 	//set startup volume
 	setVolume();
@@ -584,7 +587,7 @@ void setup()
 	//display balance setting
 	lcdPrintBal();
 	//unmute
-  	isMuted = 0;
+	isMuted = 0;
 	preamp.mas6116Mute(HIGH);
 }
 
