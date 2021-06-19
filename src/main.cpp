@@ -5,6 +5,7 @@
 #include <rotary.h>
 #include <mas6116.h>
 #include "custom.h"
+/*Testing GIT installation */
 
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
@@ -20,7 +21,7 @@
 #define EEPROM_SOURCE 2	   // EEPROM location: source
 #define EEPROM_BALANCE 3   // EEPROM location: balance
 
-#define TIME_EXITSELECT 5  // Time in seconds to exit I/O select mode when no activity
+#define TIME_EXITSELECT 5 //** Time in seconds to exit I/O select mode when no activity
 
 #define printByte(args) write(args);
 
