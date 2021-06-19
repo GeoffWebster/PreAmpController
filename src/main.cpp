@@ -15,12 +15,12 @@
 #define STANDBY 0 //Standby
 #define ACTIVE 1  //Active
 
-#define EEPROM_FIRST_USE 0 //EEPROM location: First use
-#define EEPROM_VOLUME 1	   //EEPROM location: volume
-#define EEPROM_SOURCE 2	   //EEPROM location: source
-#define EEPROM_BALANCE 3   //EEPROM location: balance
+#define EEPROM_FIRST_USE 0 // EEPROM location: First use
+#define EEPROM_VOLUME 1	   // EEPROM location: volume
+#define EEPROM_SOURCE 2	   // EEPROM location: source
+#define EEPROM_BALANCE 3   // EEPROM location: balance
 
-#define TIME_EXITSELECT 5 //** Time in seconds to exit I/O, tone or IEC select mode when no activity
+#define TIME_EXITSELECT 5  // Time in seconds to exit I/O select mode when no activity
 
 #define printByte(args) write(args);
 
