@@ -5,7 +5,6 @@
 #include <rotary.h>
 #include <mas6116.h>
 #include "custom.h"
-/*Testing GIT installation */
 
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
