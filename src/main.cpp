@@ -77,10 +77,10 @@ unsigned long t0;
 RC5 rc5(IR_PIN);
 
 // define preAmp control pins
-const int mutebPin = A3;
-const int csbPin = 10;
+const int mutePin = A3;
+const int csPin = 10;
 // preAmp construct
-mas6116 preamp(mutebPin, csbPin);
+mas6116 preamp(mutePin, csPin);
 
 // Function prototypes
 void RC5Update(void);
