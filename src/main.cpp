@@ -374,13 +374,16 @@ void sourceUpdate()
 
 void RC5Update()
 {
+	/*
+	System addresses and codes used here match infra-red codes for Arcam amplifiers
+	*/
 	unsigned char toggle;
 	unsigned char address;
 	unsigned char command;
 	// Poll for new RC5 command
 	if (rc5.read(&toggle, &address, &command))
 	{
-		if (address == 0x10)
+		if (address == 0x10) // system address for Arcam Amplifier or preamplifier
 		{
 			switch (command)
 			{
@@ -452,7 +455,7 @@ void RC5Update()
 				}
 				break;
 			case 32:
-				//up button pressed - balance adjust right
+				//up button pressed - being used instead for balance adjust right
 				if ((oldtoggle != toggle))
 				{
 					if (balance < 10) // not yet fully right
@@ -464,7 +467,7 @@ void RC5Update()
 				}
 				break;
 			case 33:
-				//down button pressed - balance adjust left
+				//down button pressed - being used instead for balance adjust left
 				if ((oldtoggle != toggle))
 				{
 					if (balance != 0) //not yet fully left
@@ -496,11 +499,11 @@ void RC5Update()
 				break;
 			}
 		}
-		else if (address == 0x14)
+		else if (address == 0x14) // system address for Arcam CD
 		{
 			if ((oldtoggle != toggle))
 			{
-				if (command == 53)
+				if (command == 53) // Play
 				{
 					oldsource = source;
 					source = 3;
