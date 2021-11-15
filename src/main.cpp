@@ -76,6 +76,7 @@ unsigned long t0;
 //RC5 construct
 RC5 rc5(IR_PIN);
 
+//Will need to change mute pin to match Controller v2.0 (mutePin = 9)
 // define preAmp control pins
 const int mutePin = A3;
 const int csPin = 10;
