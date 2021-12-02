@@ -376,7 +376,7 @@ void sourceUpdate()
 void RC5Update()
 {
 	/*
-	System addresses and codes used here match infra-red codes for Arcam amplifiers
+	System addresses and codes used here match RC-5 infra-red codes for amplifiers (and CDs)
 	*/
 	unsigned char toggle;
 	unsigned char address;
@@ -384,7 +384,7 @@ void RC5Update()
 	// Poll for new RC5 command
 	if (rc5.read(&toggle, &address, &command))
 	{
-		if (address == 0x10) // system address for Arcam Amplifier or preamplifier
+		if (address == 0x10) // standard system address for preamplifier
 		{
 			switch (command)
 			{
@@ -500,7 +500,7 @@ void RC5Update()
 				break;
 			}
 		}
-		else if (address == 0x14) // system address for Arcam CD
+		else if (address == 0x14) // system address for CD
 		{
 			if ((oldtoggle != toggle))
 			{
