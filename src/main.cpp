@@ -72,7 +72,7 @@ Rotary rotary = Rotary(encoderPinA, encoderPinB, encoderbtn);
 
 // define IR input
 unsigned int IR_PIN = 8;
-unsigned long t0;
+//unsigned long t0;
 //RC5 construct
 RC5 rc5(IR_PIN);
 
