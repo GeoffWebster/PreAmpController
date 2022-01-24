@@ -20,7 +20,7 @@ The MAS6116 / WM8816 stereo digital volume control provides independently progra
 The 20 x 4 LCD display module with an I2C interface provides Visual data for source input selected, volume level (in large characters), balance setting and mute status.
 
 ## Code Libraries
-Interfacing with the LCD display, IR decoder and rotary encoder/switch was achieved using freely avalable libraries. These are
+Interfacing with the LCD display, IR decoder and rotary encoder/switch uses shared libraries. These are
 * LiquidCrystal_I2C https://github.com/johnrickman/LiquidCrystal_I2C?utm_source=platformio&utm_medium=piohome
 * RC5 https://github.com/guyc/RC5
 * Rotary https://github.com/CarlosSiles67/Rotary
