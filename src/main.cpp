@@ -100,6 +100,7 @@ void saveIOValues();
 void lcdPrintBal();
 void lcdPrintSpaces();
 
+// Powerdown Interrupt service routine
 ISR(ANALOG_COMP_vect)
 {
 	saveIOValues();
@@ -577,6 +578,7 @@ void setup()
 	source = EEPROM.read(EEPROM_SOURCE);
 	balance = EEPROM.read(EEPROM_BALANCE);
 
+	// AVR native C code for power-down interrupt setup
 	// Setup Analog Compare Interrupt
 	ADCSRB = 0x40;									   //Analog Comparator Multiplexer Enable
 	ADCSRA = 0x00;									   //ADC Disabled
