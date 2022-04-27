@@ -6,6 +6,8 @@
 #include <mas6116.h>
 #include "custom.h"
 
+#define VERSION_NUM "2.0"  // Current software version number
+
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
 #define STATE_IO 1	// when user selects input/output
@@ -78,7 +80,7 @@ RC5 rc5(IR_PIN);
 
 //Will need to change mute pin to match Controller v2.0 (mutePin = 9)
 // define preAmp control pins
-const int mutePin = A3;
+const int mutePin = 9;
 const int csPin = 10;
 // preAmp construct
 mas6116 preamp(mutePin, csPin);
@@ -562,6 +564,14 @@ void setup()
 	backlight = 1;
 	defineCustomChars();
 	lcd.home(); // LCD cursor to home position
+
+	//show software version briefly in display
+	lcd.setCursor(0, 3);
+	sprintf(buffer1, "SW ver  " VERSION_NUM);
+	lcd.printstr(buffer1);
+	delay(2000);
+	sprintf(buffer1, "              ");
+	lcd.home();
 
 	//test for first use settings completed. If not, carry out
 	if (EEPROM.read(EEPROM_FIRST_USE))
