@@ -1,3 +1,15 @@
+/* Pre-amp Controller
+*********************
+
+Author Geoff Webster
+Current Ver 2.0
+Date	27 April 2022
+
+- Changed mute pin to match new Controller board v2.0 (mutePin = 9). Mute pin used previously was A2 (on Ver 1.0 board)
+- Added code to setup() routine which displays the SW version for two seconds at startup
+
+*/
+
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <LiquidCrystal_I2C.h>
@@ -78,7 +90,7 @@ unsigned int IR_PIN = 8;
 //RC5 construct
 RC5 rc5(IR_PIN);
 
-//Will need to change mute pin to match Controller v2.0 (mutePin = 9)
+
 // define preAmp control pins
 const int mutePin = 9;
 const int csPin = 10;
