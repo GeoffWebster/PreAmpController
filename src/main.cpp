@@ -18,16 +18,16 @@ Date	27 April 2022
 #include <mas6116.h>
 #include "custom.h"
 
-#define VERSION_NUM "2.0"  // Current software version number
+#define VERSION_NUM "2.0" // Current software version number
 
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
 #define STATE_IO 1	// when user selects input/output
-#define STATE_OFF 4 //when power down
+#define STATE_OFF 4 // when power down
 #define ON LOW
 #define OFF HIGH
-#define STANDBY 0 //Standby
-#define ACTIVE 1  //Active
+#define STANDBY 0 // Standby
+#define ACTIVE 1  // Active
 
 #define EEPROM_FIRST_USE 0 // EEPROM location: First use
 #define EEPROM_VOLUME 1	   // EEPROM location: volume
@@ -60,7 +60,7 @@ unsigned char buttonState;
 bool btnstate = 0;
 unsigned char oldbtnstate = 0;
 unsigned char rotarystate; // current rotary encoder status
-unsigned char result = 0;  //current rotary status
+unsigned char result = 0;  // current rotary status
 
 int analogPin = A1;
 
@@ -86,10 +86,9 @@ Rotary rotary = Rotary(encoderPinA, encoderPinB, encoderbtn);
 
 // define IR input
 unsigned int IR_PIN = 8;
-//unsigned long t0;
-//RC5 construct
+// unsigned long t0;
+// RC5 construct
 RC5 rc5(IR_PIN);
-
 
 // define preAmp control pins
 const int mutePin = 9;
@@ -120,8 +119,8 @@ ISR(ANALOG_COMP_vect)
 	saveIOValues();
 	backlight = STANDBY;
 	lcd.noDisplay();
-	lcd.noBacklight(); //Turn off backlight
-	mute();			   //mute output
+	lcd.noBacklight(); // Turn off backlight
+	mute();			   // mute output
 	state = STATE_OFF;
 }
 
@@ -182,12 +181,10 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 		lcd.printByte(bn1[highnumber * 4 + 2]);
 		lcd.printByte(bn1[highnumber * 4 + 3]);
 	}
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn1[midnumber * 4]);
 	lcd.printByte(bn1[midnumber * 4 + 1]);
 	lcd.printByte(bn1[midnumber * 4 + 2]);
 	lcd.printByte(bn1[midnumber * 4 + 3]);
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn1[lownumber * 4]);
 	lcd.printByte(bn1[lownumber * 4 + 1]);
 	lcd.printByte(bn1[lownumber * 4 + 2]);
@@ -204,12 +201,10 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 		lcd.printByte(bn2[highnumber * 4 + 2]);
 		lcd.printByte(bn2[highnumber * 4 + 3]);
 	}
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn2[midnumber * 4]);
 	lcd.printByte(bn2[midnumber * 4 + 1]);
 	lcd.printByte(bn2[midnumber * 4 + 2]);
 	lcd.printByte(bn2[midnumber * 4 + 3]);
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn2[lownumber * 4]);
 	lcd.printByte(bn2[lownumber * 4 + 1]);
 	lcd.printByte(bn2[lownumber * 4 + 2]);
@@ -226,12 +221,10 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 		lcd.printByte(bn3[highnumber * 4 + 2]);
 		lcd.printByte(bn3[highnumber * 4 + 3]);
 	}
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn3[midnumber * 4]);
 	lcd.printByte(bn3[midnumber * 4 + 1]);
 	lcd.printByte(bn3[midnumber * 4 + 2]);
 	lcd.printByte(bn3[midnumber * 4 + 3]);
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn3[lownumber * 4]);
 	lcd.printByte(bn3[lownumber * 4 + 1]);
 	lcd.printByte(bn3[lownumber * 4 + 2]);
@@ -248,12 +241,10 @@ void lcdPrintThreeNumber(unsigned char column, unsigned char number)
 		lcd.printByte(bn4[highnumber * 4 + 2]);
 		lcd.printByte(bn4[highnumber * 4 + 3]);
 	}
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn4[midnumber * 4]);
 	lcd.printByte(bn4[midnumber * 4 + 1]);
 	lcd.printByte(bn4[midnumber * 4 + 2]);
 	lcd.printByte(bn4[midnumber * 4 + 3]);
-	lcd.printByte(A); // Blank
 	lcd.printByte(bn4[lownumber * 4]);
 	lcd.printByte(bn4[lownumber * 4 + 1]);
 	lcd.printByte(bn4[lownumber * 4 + 2]);
@@ -277,6 +268,10 @@ void RotaryUpdate()
 		break;
 	case STATE_IO:
 		sourceUpdate();
+		if ((millis() - milOnButton) > TIME_EXITSELECT * 1000)
+		{
+			state = STATE_RUN;
+		}
 		break;
 	default:
 		break;
@@ -285,8 +280,8 @@ void RotaryUpdate()
 
 void volumeUpdate()
 {
-	//0 = no rotation, 10 = clockwise,  20 = counter clockwise
-	//result = rotary.process();
+	// 0 = no rotation, 10 = clockwise,  20 = counter clockwise
+	// result = rotary.process();
 	switch (rotary.process())
 	{
 	case 0:
@@ -324,7 +319,7 @@ void setVolume()
 	balanceUpdate();
 	preamp.mas6116Write(mas6116RegLeft, leftVol);
 	preamp.mas6116Write(mas6116RegRight, rightVol);
-	//display volume setting
+	// display volume setting
 	lcdPrintThreeNumber(6, volume);
 }
 
@@ -353,8 +348,8 @@ void buttonPressed()
 
 void sourceUpdate()
 {
-	//0 = do nothing, 10 = clockwise,  20 = counter clockwise
-	//result = rotary.process();
+	// 0 = do nothing, 10 = clockwise,  20 = counter clockwise
+	// result = rotary.process();
 	switch (rotary.process())
 	{
 	case DIR_CW:
@@ -440,14 +435,14 @@ void RC5Update()
 				}
 				break;
 			case 13:
-				//Mute
+				// Mute
 				if ((oldtoggle != toggle))
 				{
 					toggleMute();
 				}
 				break;
 			case 16:
-				//Increase Vol
+				// Increase Vol
 				if (volume < 234)
 				{
 					if (isMuted)
@@ -459,7 +454,7 @@ void RC5Update()
 				}
 				break;
 			case 17:
-				//Reduce Vol
+				// Reduce Vol
 				if (volume != 0)
 				{
 					if (isMuted)
@@ -471,7 +466,7 @@ void RC5Update()
 				}
 				break;
 			case 32:
-				//up button pressed - being used instead for balance adjust right
+				// up button pressed - being used instead for balance adjust right
 				if ((oldtoggle != toggle))
 				{
 					if (balance < 10) // not yet fully right
@@ -483,10 +478,10 @@ void RC5Update()
 				}
 				break;
 			case 33:
-				//down button pressed - being used instead for balance adjust left
+				// down button pressed - being used instead for balance adjust left
 				if ((oldtoggle != toggle))
 				{
-					if (balance != 0) //not yet fully left
+					if (balance != 0) // not yet fully left
 					{
 						balance = balance - 1;
 						lcdPrintBal();
@@ -495,21 +490,21 @@ void RC5Update()
 				}
 				break;
 			case 59:
-				//Display Toggle
+				// Display Toggle
 				if ((oldtoggle != toggle))
 				{
 					lcd.setCursor(0, 2);
 					if (backlight)
 					{
 						backlight = STANDBY;
-						lcd.noBacklight(); //Turn off backlight
-						mute();			   //mute output
+						lcd.noBacklight(); // Turn off backlight
+						mute();			   // mute output
 					}
 					else
 					{
 						backlight = ACTIVE;
-						lcd.backlight(); //Turn on backlight
-						unMute();		 //unmute output
+						lcd.backlight(); // Turn on backlight
+						unMute();		 // unmute output
 					}
 				}
 				break;
@@ -536,7 +531,7 @@ void unMute()
 	if (!backlight)
 	{
 		backlight = ACTIVE;
-		lcd.backlight(); //Turn on backlight
+		lcd.backlight(); // Turn on backlight
 	}
 	isMuted = 0;
 	preamp.mas6116Mute(HIGH);
@@ -577,7 +572,7 @@ void setup()
 	defineCustomChars();
 	lcd.home(); // LCD cursor to home position
 
-	//show software version briefly in display
+	// show software version briefly in display
 	lcd.setCursor(0, 3);
 	sprintf(buffer1, "SW ver  " VERSION_NUM);
 	lcd.printstr(buffer1);
@@ -585,7 +580,7 @@ void setup()
 	sprintf(buffer1, "              ");
 	lcd.home();
 
-	//test for first use settings completed. If not, carry out
+	// test for first use settings completed. If not, carry out
 	if (EEPROM.read(EEPROM_FIRST_USE))
 	{
 		// Set vol, source, balance for first time
@@ -602,19 +597,19 @@ void setup()
 
 	// AVR native C code for power-down interrupt setup
 	// Setup Analog Compare Interrupt
-	ADCSRB = 0x40;									   //Analog Comparator Multiplexer Enable
-	ADCSRA = 0x00;									   //ADC Disabled
+	ADCSRB = 0x40;									   // Analog Comparator Multiplexer Enable
+	ADCSRA = 0x00;									   // ADC Disabled
 	ADMUX = 0x01;									   // Arduino pin A1
-	ACSR |= (1 << ACBG) | (1 << ACIS1) | (1 << ACIS0); //Analog Comparator Bandgap Select, Interrupt on rising edge
-	ACSR |= (1 << ACIE);							   //Analog Comparator Interrupt enable
+	ACSR |= (1 << ACBG) | (1 << ACIS1) | (1 << ACIS0); // Analog Comparator Bandgap Select, Interrupt on rising edge
+	ACSR |= (1 << ACIE);							   // Analog Comparator Interrupt enable
 
-	//set startup volume
+	// set startup volume
 	setVolume();
-	//set source
+	// set source
 	setIO();
-	//display balance setting
+	// display balance setting
 	lcdPrintBal();
-	//unmute
+	// unmute
 	isMuted = 0;
 	preamp.mas6116Mute(HIGH);
 }
@@ -623,8 +618,4 @@ void loop()
 {
 	RC5Update();
 	RotaryUpdate();
-	if ((millis() - milOnButton) > TIME_EXITSELECT * 1000)
-	{
-		state = STATE_RUN;
-	}
 }
