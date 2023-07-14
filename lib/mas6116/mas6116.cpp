@@ -1,3 +1,5 @@
+/*Rev 1 - amended mas6116 construct  so that initial state has MUTE pin LOW (muted)*/
+
 #include "mas6116.h"
 #include <Arduino.h>
 #include <SPI.h>
@@ -6,7 +8,7 @@ mas6116::mas6116(int mutePin, int csPin)
 {
 	SPI.begin();
 	pinMode(mutePin, OUTPUT);
-	digitalWrite(mutePin, HIGH);
+	digitalWrite(mutePin, LOW);
 	pinMode(csPin, OUTPUT);
 	digitalWrite(csPin, HIGH);
 	_csPin = csPin;

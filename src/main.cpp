@@ -2,9 +2,12 @@
 *********************
 
 Author Geoff Webster
-Current Ver 2.0
-Date	27 April 2022
 
+Current Ver 3.0 Date	14 July 2023
+- Changed mas6116::mas6116 construct in mas6116.cpp so that MUTE pin is initialized LOW
+	Ensures MUTE remains LOW for two seconds after power startup
+
+Ver 2.0 Date	27 April 2022
 - Changed mute pin to match new Controller board v2.0 (mutePin = 9). Mute pin used previously was A2 (on Ver 1.0 board)
 - Added code to setup() routine which displays the SW version for two seconds at startup
 
@@ -18,7 +21,7 @@ Date	27 April 2022
 #include <mas6116.h>
 #include "custom.h"
 
-#define VERSION_NUM "2.0" // Current software version number
+#define VERSION_NUM "3.0" // Current software version number
 
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
