@@ -3,7 +3,10 @@
 
 Author Geoff Webster
 
-Current Ver 3.0 Date	14 July 2023
+Current Ver  4.0 11 February 2024
+- Amended RC coding for backlight so only toggles backlight (leaving source, volume and mute unchanged)
+
+3.0 Date	14 July 2023
 - Changed mas6116::mas6116 construct in mas6116.cpp so that MUTE pin is initialized LOW
 	Ensures MUTE remains LOW for two seconds after power startup
 
@@ -21,7 +24,7 @@ Ver 2.0 Date	27 April 2022
 #include <mas6116.h>
 #include "custom.h"
 
-#define VERSION_NUM "3.0" // Current software version number
+#define VERSION_NUM "4.0" // Current software version number
 
 /******* MACHINE STATES *******/
 #define STATE_RUN 0 // normal run state
@@ -405,6 +408,10 @@ void RC5Update()
 				// Phono
 				if ((oldtoggle != toggle))
 				{
+					if (!backlight)
+					{
+						unMute(); // unmute output
+					}
 					oldsource = source;
 					source = 1;
 					setIO();
@@ -414,6 +421,10 @@ void RC5Update()
 				// Tuner
 				if ((oldtoggle != toggle))
 				{
+					if (!backlight)
+					{
+						unMute(); // unmute output
+					}
 					oldsource = source;
 					source = 4;
 					setIO();
@@ -423,6 +434,10 @@ void RC5Update()
 				// CD
 				if ((oldtoggle != toggle))
 				{
+					if (!backlight)
+					{
+						unMute(); // unmute output
+					}
 					oldsource = source;
 					source = 3;
 					setIO();
@@ -432,6 +447,10 @@ void RC5Update()
 				// Media
 				if ((oldtoggle != toggle))
 				{
+					if (!backlight)
+					{
+						unMute(); // unmute output
+					}
 					oldsource = source;
 					source = 2;
 					setIO();
